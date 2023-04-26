@@ -99,6 +99,7 @@ class amazonebot:
                     print("total_items",total_items)
                     for item in items:
                         try: 
+                            products_dict = {}  
                             name = item.find_element(By.XPATH, './/span[@class="a-size-medium a-color-base a-text-normal"]')
                             
                             data_asin = item.get_attribute("data-asin")
@@ -136,9 +137,9 @@ class amazonebot:
                         except:
                             print("Problem to load data")
                         
-                        page_link = WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div[2]/div[1]/div[1]/div/span[1]/div[1]/div[22]/div/div/span/a[3]')))
-                        page_link.click()
-                        sleep(2)
+                        # page_link = WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div[2]/div[1]/div[1]/div/span[1]/div[1]/div[22]/div/div/span/a[3]')))
+                        # page_link.click()
+                        # sleep(2)
 
                     driver.quit()
                     return proxy
