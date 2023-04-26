@@ -79,68 +79,70 @@ class amazonebot:
                     search_box = driver.find_element(By.ID, "twotabsearchtextbox")
                     search_box.send_keys("Air Conditioners")
                     search_box.send_keys(Keys.RETURN)
-                    # sleep(1)
-                    
-                    # prices = driver.find_elements(By.CLASS_NAME,"a-price-whole")
-                    # for price in prices:    
-                    #     print(price.text)
-                    
-                    # WebDriverWait(self.driver, 5)
                     products_data = []
                     products_dict = {}  
-                    # product_name = []
-                    # product_asin = []
-                    # product_price = []
-                    # product_ratings = []
-                    # product_ratings_num =[]
-                    # product_link = []
-                    items = WebDriverWait(driver,10).until(EC.presence_of_all_elements_located((By.XPATH, '//div[contains(@class, "s-result-item s-asin")]')))
-                    total_items = len(items)
-                    print("total_items",total_items)
-                    for item in items:
+
+                    ifpagination = True
+                    page_count = 1
+                    while ifpagination and page_count <= 3:
+                        sleep(10)    
+                        items = WebDriverWait(driver,10).until(EC.presence_of_all_elements_located((By.XPATH, '//div[contains(@class, "s-result-item s-asin")]')))
+                        total_items = len(items)
+                        print("total_items",total_items)
                         try: 
-                            products_dict = {}  
-                            name = item.find_element(By.XPATH, './/span[@class="a-size-medium a-color-base a-text-normal"]')
-                            
-                            data_asin = item.get_attribute("data-asin")
-                            # product_asin.append(data_asin)
-                            products_dict["product_name"] = name.text
-                            
-                            whole_price = item.find_elements(By.XPATH, './/span[@class="a-price-whole"]')
-                            for price in whole_price:    
-                                products_dict["product_price"] = price.text
-                            
-                            # find a ratings box
-                            ratings_box = item.find_elements(By.XPATH,'.//div[@class="a-row a-size-small"]/span')
-                            if ratings_box != []:
-                                ratings = ratings_box[0].get_attribute('aria-label')
-                                ratings_num = ratings_box[1].get_attribute('aria-label')
-                            else:
-                                ratings, ratings_num = 0, 0
-                            
-                            products_dict["product_ratings"] = ratings  
-                            products_dict["product_ratings_num"] = ratings_num  
-                            
-                            # find link
-                            link = item.find_element(By.XPATH, './/a[@class="a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal"]').get_attribute("href")
-                            products_dict["product_link"] = link  
-                            
-                            products_data.append(products_dict)
-                            print(products_data)
-                            
-                            df = pd.DataFrame(products_data)
-                            print(df)
-                            
-                            print("\n")
-                            df.to_csv('amazon_AC_data.csv')
+                            for item in items:
+                                    products_dict = {}  
+                                    
+                                    # Scroll the link into view
+                                    driver.execute_script("arguments[0].scrollIntoView();", item)
                         
+                                    name = item.find_element(By.XPATH, './/span[@class="a-size-medium a-color-base a-text-normal"]')
+                                    
+                                    data_asin = item.get_attribute("data-asin")
+                                    # product_asin.append(data_asin)
+                                    products_dict["product_name"] = name.text
+                                    
+                                    whole_price = item.find_elements(By.XPATH, './/span[@class="a-price-whole"]')
+                                    for price in whole_price:    
+                                        products_dict["product_price"] = price.text
+                                    
+                                    # find a ratings box
+                                    ratings_box = item.find_elements(By.XPATH,'.//div[@class="a-row a-size-small"]/span')
+                                    if ratings_box != []:
+                                        ratings = ratings_box[0].get_attribute('aria-label')
+                                        ratings_num = ratings_box[1].get_attribute('aria-label')
+                                    else:
+                                        ratings, ratings_num = 0, 0
+                                    
+                                    products_dict["product_ratings"] = ratings  
+                                    products_dict["product_ratings_num"] = ratings_num  
+                                    
+                                    # find link
+                                    link = item.find_element(By.XPATH, './/a[@class="a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal"]').get_attribute("href")
+                                    products_dict["product_link"] = link  
+                                    
+                                    products_data.append(products_dict)
+                                    print(products_data)
+                                    
+                                    df = pd.DataFrame(products_data)
+                                    print(df)
+                                    
+                                    print("\n")
+                                    df.to_csv('amazon_AC.csv')
+                                    sleep(1)
+                                
+                            if page_count == 3:
+                                ifpagination = False    
+                            
+                            else:
+                                # next_link = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//a[@class='s-pagination-item s-pagination-next s-pagination-button s-pagination-separator']")))
+                                # next_link = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "a.s-pagination-next")))
+                                next_link = driver.find_element(By.CSS_SELECTOR,"a.s-pagination-next")
+                                next_link.click()
+                                page_count += 1
+                                sleep(10)
                         except:
                             print("Problem to load data")
-                        
-                        # page_link = WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div[2]/div[1]/div[1]/div/span[1]/div[1]/div[22]/div/div/span/a[3]')))
-                        # page_link.click()
-                        # sleep(2)
-
                     driver.quit()
                     return proxy
                 except:
