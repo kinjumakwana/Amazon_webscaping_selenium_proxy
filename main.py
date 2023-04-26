@@ -98,8 +98,9 @@ class amazonebot:
                         
                                     name = item.find_element(By.XPATH, './/span[@class="a-size-medium a-color-base a-text-normal"]')
                                     
+                                    # Amazon Standard Identification Number (ASIN)
                                     data_asin = item.get_attribute("data-asin")
-                                    # product_asin.append(data_asin)
+                                    products_dict["data_asin"] = data_asin
                                     products_dict["product_name"] = name.text
                                     
                                     whole_price = item.find_elements(By.XPATH, './/span[@class="a-price-whole"]')

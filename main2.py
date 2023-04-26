@@ -68,7 +68,8 @@ class amazonebot:
                     name = item.find_element(By.XPATH, './/span[@class="a-size-medium a-color-base a-text-normal"]')
                     
                     data_asin = item.get_attribute("data-asin")
-                    # product_asin.append(data_asin)
+                    # Amazon Standard Identification Number (ASIN)
+                    products_dict["data_asin"] = data_asin
                     products_dict["product_name"] = name.text
                     
                     whole_price = item.find_elements(By.XPATH, './/span[@class="a-price-whole"]')
@@ -104,7 +105,8 @@ class amazonebot:
                     ifpagination = False    
                 
                 else:
-                    next_link = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//a[@class='s-pagination-item s-pagination-next s-pagination-button s-pagination-separator']")))
+                    # next_link = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//a[@class='s-pagination-item s-pagination-next s-pagination-button s-pagination-separator']")))
+                    next_link = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "a.s-pagination-next")))
                     next_link.click()
                     sleep(5)
                     page_count += 1
