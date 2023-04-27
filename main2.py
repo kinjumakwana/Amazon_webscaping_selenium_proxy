@@ -18,6 +18,16 @@ import csv
 s = Service(r"D:\Kinjal\chromedriver_win32\chromedriver.exe")
 options = webdriver.ChromeOptions()
 options.add_argument('--disable-blink-features=AutomationControlled')
+
+def get_price_data():
+    prices = {}
+    with open('amazon_AC_data2.csv', 'r') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            asin = row[1]
+            price = row[3]
+            prices[asin] = price
+    return prices
         
 class amazonebot:
     def __init__(self):
@@ -133,6 +143,31 @@ class amazonebot:
         except:
             print("No available proxies.")
             
-amazonebots = amazonebot()
-amazonebots.amazonedata()
+# amazonebots = amazonebot()
+# amazonebots.amazonedata()
+
+driver = webdriver.Chrome(service=s, options=options)
+driver.maximize_window()
+price_d = get_price_data()
+# print(price_d)
+
+for asin,price_old in price_d.items():
+    if asin != 'data_asin':
+        url = 'https://www.amazon.in/dp/' + asin
+        driver.get(url)
+        sleep(5)
+
+        print("asin",asin)
+        prices = driver.find_elements(By.CLASS_NAME,"a-price-whole")
+        for price in prices:    
+            current_price = price.text
+        print(current_price)
+            
+        # Compare the current price with the price in the CSV file
+        # if current_price != price_old:
+        #     print(f'The price for ASIN {asin} has changed from {price_old} to {current_price}.')
+            
+        if current_price < price_old:
+            print(f"The price for ASIN {asin} has changed from {price_old} to {current_price}")
+
 
